@@ -1,11 +1,15 @@
 package tdameritrade
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 const (
 	baseURL="https://api.tdameritrade.com/v1"
@@ -18,6 +22,9 @@ type Client struct {
 	// Base URL for API requests. Defaults to the public TD-Ameritrade API, but can be
 	// set to any endpoint. This allows for more manageable testing.
 	BaseURL *url.URL
+
+	// services used for talking to different parts of the tdameritrade api
+	PriceHistory *PriceHistoryService
 }
 
 type Response struct {
@@ -82,6 +89,7 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*htt
 		if w, ok := v.(io.Writer); ok {
 			_, _ = io.Copy(w, resp.Body)
 		} else {
+			// TODO handle this
 			// is not an io writer
 		}
 	}
@@ -90,5 +98,43 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*htt
 }
 
 func checkResponse(resp *http.Response) error {
+	// TODO check resp see api docs
 	return nil
+}
+
+// NewRequest creates an API request. A relative URL can be provided in urlStr,
+// in which case it is resolved relative to the BaseURL of the Client.
+// Relative URLs should always be specified without a preceding slash. If
+// specified, the value pointed to by body is JSON encoded and included as the
+// request body.
+func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
+	if !strings.HasSuffix(c.BaseURL.Path, "/") {
+		return nil, fmt.Errorf("BaseURL must have a trailing slash, but %q does not", c.BaseURL)
+	}
+
+	u, err := c.BaseURL.Parse(urlStr)
+	if err != nil {
+		return nil, err
+	}
+
+	var buf io.ReadWriter
+	if body != nil {
+		buf = new(bytes.Buffer)
+		enc := json.NewEncoder(buf)
+		enc.SetEscapeHTML(false)
+		err := enc.Encode(body)
+		if err != nil {
+			return nil, err
+		}
+	}
+	req, err := http.NewRequest(method, u.String(), buf)
+	if err != nil {
+		return nil, err
+	}
+
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	return req, nil
 }
