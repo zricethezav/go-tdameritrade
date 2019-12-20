@@ -38,12 +38,12 @@ type PriceHistoryOptions struct {
 
 type PriceHistory struct {
 	Candles []struct {
-		Close    int `json:"close"`
+		Close    float64 `json:"close"`
 		Datetime int `json:"datetime"`
-		High     int `json:"high"`
-		Low      int `json:"low"`
-		Open     int `json:"open"`
-		Volume   int `json:"volume"`
+		High     float64 `json:"high"`
+		Low      float64 `json:"low"`
+		Open     float64 `json:"open"`
+		Volume   float64 `json:"volume"`
 	} `json:"candles"`
 	Empty  bool   `json:"empty"`
 	Symbol string `json:"symbol"`
@@ -51,19 +51,32 @@ type PriceHistory struct {
 
 // PriceHistory get the price history for a symbol
 // TDAmeritrade API Docs: https://developer.tdameritrade.com/price-history/apis/get/marketdata/%7Bsymbol%7D/pricehistory
-func (s *PriceHistoryService) PriceHistory(ctx context.Context, opts PriceHistoryOptions) (*PriceHistory, *Response, error) {
-	if err := opts.validate(); err != nil {
-		return nil, nil, err
+func (s *PriceHistoryService) PriceHistory(ctx context.Context, symbol string, opts *PriceHistoryOptions) (*PriceHistory, *Response, error) {
+	u := fmt.Sprintf("marketdata/%s/pricehistory", symbol)
+	if opts != nil {
+		if err := opts.validate(); err != nil {
+			return nil, nil, err
+		}
+		q, err := query.Values(opts)
+		if err != nil {
+			return nil, nil, err
+		}
+		u = fmt.Sprintf("%s?%s", u, q.Encode())
 	}
-	q, err := query.Values(opts)
+
+	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, nil, err
 	}
-	// u.RawQuery = q.Encode()
 
+	priceHistory := new(PriceHistory)
+	resp, err := s.client.Do(ctx, req, priceHistory)
+	if err != nil {
+		return nil, resp, err
+	}
+	fmt.Println(resp.StatusCode, resp.Header)
 
-
-	return nil, nil, nil
+	return priceHistory, resp, nil
 }
 
 func (opts *PriceHistoryOptions) validate() error {
@@ -94,3 +107,4 @@ func contains(s string, lst []string) bool {
 	}
 	return false
 }
+

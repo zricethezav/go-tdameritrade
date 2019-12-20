@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 const (
-	baseURL="https://api.tdameritrade.com/v1"
+	baseURL="https://api.tdameritrade.com/v1/"
 )
 
 // A Client manages communication with the TD-Ameritrade API.
@@ -45,7 +45,9 @@ func NewClient(httpClient *http.Client) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	c := &Client{client: httpClient, BaseURL: b}
+	c.PriceHistory = &PriceHistoryService{client: c}
 
 	return c, nil
 }
@@ -59,7 +61,7 @@ func (c *Client) UpdateBaseURL(baseURL string) error {
 	return nil
 }
 
-func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*http.Response, error) {
+func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Response, error) {
 	if ctx == nil {
 		return nil, errors.New("context must be non-nil")
 	}
@@ -77,29 +79,42 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*htt
 			return nil, err
 		}
 	}
+
 	defer resp.Body.Close()
 
 	if err := checkResponse(resp); err != nil  {
 		return nil, err
 	}
 
+	response := newResponse(resp)
 
 	// write to v for that good shit
 	if v != nil {
+		fmt.Println("trying")
 		if w, ok := v.(io.Writer); ok {
 			_, _ = io.Copy(w, resp.Body)
 		} else {
-			// TODO handle this
-			// is not an io writer
+			decErr := json.NewDecoder(resp.Body).Decode(v)
+			if decErr == io.EOF {
+				decErr = nil // ignore EOF errors caused by empty response body
+			}
+			if decErr != nil {
+				err = decErr
+			}
 		}
 	}
 
-	return resp, nil
+	return response, err
 }
 
 func checkResponse(resp *http.Response) error {
 	// TODO check resp see api docs
 	return nil
+}
+
+func newResponse(r *http.Response) *Response {
+	response := &Response{Response: r}
+	return response
 }
 
 // NewRequest creates an API request. A relative URL can be provided in urlStr,
