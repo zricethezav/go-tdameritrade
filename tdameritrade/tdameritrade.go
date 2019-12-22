@@ -7,12 +7,14 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 )
+
 const (
-	baseURL="https://api.tdameritrade.com/v1/"
+	baseURL = "https://api.tdameritrade.com/v1/"
 )
 
 // A Client manages communication with the TD-Ameritrade API.
@@ -25,6 +27,7 @@ type Client struct {
 
 	// services used for talking to different parts of the tdameritrade api
 	PriceHistory *PriceHistoryService
+	Account      *AccountsService
 }
 
 type Response struct {
@@ -48,6 +51,7 @@ func NewClient(httpClient *http.Client) (*Client, error) {
 
 	c := &Client{client: httpClient, BaseURL: b}
 	c.PriceHistory = &PriceHistoryService{client: c}
+	c.Account = &AccountsService{client: c}
 
 	return c, nil
 }
@@ -82,7 +86,7 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 
 	defer resp.Body.Close()
 
-	if err := checkResponse(resp); err != nil  {
+	if err := checkResponse(resp); err != nil {
 		return nil, err
 	}
 
@@ -90,7 +94,6 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 
 	// write to v for that good shit
 	if v != nil {
-		fmt.Println("trying")
 		if w, ok := v.(io.Writer); ok {
 			_, _ = io.Copy(w, resp.Body)
 		} else {
@@ -107,9 +110,12 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 	return response, err
 }
 
-func checkResponse(resp *http.Response) error {
-	// TODO check resp see api docs
-	return nil
+func checkResponse(r *http.Response) error {
+	if c := r.StatusCode; 200 <= c && c <= 299 {
+		return nil
+	}
+	errMsg, _ := ioutil.ReadAll(r.Body)
+	return errors.New(string(errMsg))
 }
 
 func newResponse(r *http.Response) *Response {

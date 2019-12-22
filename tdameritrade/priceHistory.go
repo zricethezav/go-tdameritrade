@@ -74,8 +74,9 @@ func (s *PriceHistoryService) PriceHistory(ctx context.Context, symbol string, o
 	if err != nil {
 		return nil, resp, err
 	}
-	fmt.Println(resp.StatusCode, resp.Header)
-
+	if priceHistory.Empty {
+		return priceHistory, resp, fmt.Errorf("no data, check time period and/or ticker %s", symbol)
+	}
 	return priceHistory, resp, nil
 }
 

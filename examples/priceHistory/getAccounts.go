@@ -1,12 +1,12 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"github.com/zricethezav/go-tdameritrade/tdameritrade"
-	"golang.org/x/oauth2"
-	"log"
-	"os"
+"context"
+"fmt"
+"github.com/zricethezav/go-tdameritrade/tdameritrade"
+"golang.org/x/oauth2"
+"log"
+"os"
 )
 
 func main() {
@@ -40,10 +40,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	ph, _, err := c.PriceHistory.PriceHistory(ctx, "SPY", nil)
+	accounts, _, err := c.Account.GetAccounts(ctx, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(ph)
-}
 
+	fmt.Printf("%+v", (*accounts)[0].AccountID)
+}
