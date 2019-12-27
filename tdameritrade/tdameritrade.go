@@ -148,10 +148,12 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 			return nil, err
 		}
 	}
+
 	req, err := http.NewRequest(method, u.String(), buf)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(buf)
 
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")

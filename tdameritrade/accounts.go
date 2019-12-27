@@ -165,55 +165,57 @@ type Balance struct {
 }
 
 type OrderLegCollection struct {
-	OrderLegType   string     `json:"orderLegType"`
-	LegID          int        `json:"legId"`
+	OrderLegType   string     `json:"orderLegType,omitempty"`
+	LegID          int        `json:"legId,omitempty"`
 	Instrument     Instrument `json:"instrument"`
 	Instruction    string     `json:"instruction"`
-	PositionEffect string     `json:"positionEffect"`
+	PositionEffect string     `json:"positionEffect,omitempty"`
 	Quantity       int        `json:"quantity"`
-	QuantityType   string     `json:"quantityType"`
+	QuantityType   string     `json:"quantityType,omitempty"`
+}
+
+type CancelTime struct {
+	Date        string `json:"date,omitempty"`
+	ShortFormat bool   `json:"shortFormat,omitempty"`
 }
 
 type Order struct {
-	Session    string `json:"session"`
-	Duration   string `json:"duration"`
-	OrderType  string `json:"orderType"`
-	CancelTime struct {
-		Date        string `json:"date"`
-		ShortFormat bool   `json:"shortFormat"`
-	} `json:"cancelTime"`
-	ComplexOrderStrategyType string                `json:"complexOrderStrategyType"`
-	Quantity                 int                   `json:"quantity"`
-	FilledQuantity           int                   `json:"filledQuantity"`
-	RemainingQuantity        int                   `json:"remainingQuantity"`
-	RequestedDestination     string                `json:"requestedDestination"`
-	DestinationLinkName      string                `json:"destinationLinkName"`
-	ReleaseTime              string                `json:"releaseTime"`
-	StopPrice                int                   `json:"stopPrice"`
-	StopPriceLinkBasis       string                `json:"stopPriceLinkBasis"`
-	StopPriceLinkType        string                `json:"stopPriceLinkType"`
-	StopPriceOffset          int                   `json:"stopPriceOffset"`
-	StopType                 string                `json:"stopType"`
-	PriceLinkBasis           string                `json:"priceLinkBasis"`
-	PriceLinkType            string                `json:"priceLinkType"`
-	Price                    int                   `json:"price"`
-	TaxLotMethod             string                `json:"taxLotMethod"`
+	Session                  string                `json:"session"`
+	Duration                 string                `json:"duration"`
+	OrderType                string                `json:"orderType"`
+	CancelTime               *CancelTime           `json:"cancelTime,omitempty"`
+	ComplexOrderStrategyType string                `json:"complexOrderStrategyType,omitempty"`
+	Quantity                 float64               `json:"quantity,omitempty"`
+	FilledQuantity           float64               `json:"filledQuantity,omitempty"`
+	RemainingQuantity        float64               `json:"remainingQuantity,omitempty"`
+	RequestedDestination     string                `json:"requestedDestination,omitempty"`
+	DestinationLinkName      string                `json:"destinationLinkName,omitempty"`
+	ReleaseTime              string                `json:"releaseTime,omitempty"`
+	StopPrice                float64               `json:"stopPrice,omitempty"`
+	StopPriceLinkBasis       string                `json:"stopPriceLinkBasis,omitempty"`
+	StopPriceLinkType        string                `json:"stopPriceLinkType,omitempty"`
+	StopPriceOffset          float64               `json:"stopPriceOffset,omitempty"`
+	StopType                 string                `json:"stopType,omitempty"`
+	PriceLinkBasis           string                `json:"priceLinkBasis,omitempty"`
+	PriceLinkType            string                `json:"priceLinkType,omitempty"`
+	Price                    float64               `json:"price,omitempty"`
+	TaxLotMethod             string                `json:"taxLotMethod,omitempty"`
 	OrderLegCollection       []*OrderLegCollection `json:"orderLegCollection"`
-	ActivationPrice          int                   `json:"activationPrice"`
-	SpecialInstruction       string                `json:"specialInstruction"`
+	ActivationPrice          float64               `json:"activationPrice,omitempty"`
+	SpecialInstruction       string                `json:"specialInstruction,omitempty"`
 	OrderStrategyType        string                `json:"orderStrategyType"`
-	OrderID                  int                   `json:"orderId"`
-	Cancelable               bool                  `json:"cancelable"`
-	Editable                 bool                  `json:"editable"`
-	Status                   string                `json:"status"`
-	EnteredTime              string                `json:"enteredTime"`
-	CloseTime                string                `json:"closeTime"`
-	Tag                      string                `json:"tag"`
-	AccountID                int                   `json:"accountId"`
-	OrderActivityCollection  []*Execution          `json:"orderActivityCollection"`
-	ReplacingOrderCollection []*Order              `json:"replacingOrderCollection"`
-	ChildOrderStrategies     []*Order              `json:"childOrderStrategies"`
-	StatusDescription        string                `json:"statusDescription"`
+	OrderID                  int64                 `json:"orderId,omitempty"`
+	Cancelable               bool                  `json:"cancelable,omitempty"`
+	Editable                 bool                  `json:"editable,omitempty"`
+	Status                   string                `json:"status,omitempty"`
+	EnteredTime              string                `json:"enteredTime,omitempty"`
+	CloseTime                string                `json:"closeTime,omitempty"`
+	Tag                      string                `json:"tag,omitempty"`
+	AccountID                float64               `json:"accountId,omitempty"`
+	OrderActivityCollection  []*Execution          `json:"orderActivityCollection,omitempty"`
+	ReplacingOrderCollection []*Order              `json:"replacingOrderCollection,omitempty"`
+	ChildOrderStrategies     []*Order              `json:"childOrderStrategies,omitempty"`
+	StatusDescription        string                `json:"statusDescription,omitempty"`
 }
 
 type ExecutionLeg struct {
@@ -385,6 +387,7 @@ func (s *AccountsService) PlaceOrder(ctx context.Context, accountID string, orde
 	if err != nil {
 		return nil, err
 	}
+	req.Header.Set("Content-Type", "application/json")
 	return s.client.Do(ctx, req, nil)
 }
 

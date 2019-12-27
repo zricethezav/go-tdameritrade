@@ -19,6 +19,10 @@ func main() {
 	if refreshToken == "" {
 		log.Fatal("Unauthorized: No refresh token present")
 	}
+	accountID := os.Getenv("TDAMERITRADE_ACCOUNT_ID")
+	if refreshToken == "" {
+		log.Fatal("No Account ID present")
+	}
 
 	conf := oauth2.Config{
 		ClientID: token,
@@ -42,19 +46,19 @@ func main() {
 
 	// more examples here: https://developer.tdameritrade.com/content/place-order-samples
 	// TODO needs some work. Validation errors
-	resp, err := c.Account.PlaceOrder(ctx, "accountID", &tdameritrade.Order{
+	resp, err := c.Account.PlaceOrder(ctx, accountID, &tdameritrade.Order{
 		Session: "NORMAL",
-		Duration: "GOOD_TILL_CANCEL",
+		Duration: "DAY",
 		OrderType: "MARKET",
 		OrderStrategyType: "SINGLE",
 		OrderLegCollection: []*tdameritrade.OrderLegCollection{
 			{
-				Instruction: "BUY",
-				Quantity: 1,
+				Instruction: "Sell",
+				Quantity: 2,
 				Instrument: tdameritrade.Instrument{
 					AssetType: "EQUITY",
 					Data: &tdameritrade.Equity{
-						Symbol: "SPY",
+						Symbol: "CRON",
 					},
 				},
 
