@@ -1,12 +1,12 @@
 package main
 
 import (
-"context"
-"fmt"
-"github.com/zricethezav/go-tdameritrade/tdameritrade"
-"golang.org/x/oauth2"
-"log"
-"os"
+	"context"
+	"fmt"
+	"github.com/zricethezav/go-tdameritrade/tdameritrade"
+	"golang.org/x/oauth2"
+	"log"
+	"os"
 )
 
 func main() {

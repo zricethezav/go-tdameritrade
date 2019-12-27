@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
 type Accounts []*Account
@@ -163,6 +164,74 @@ type Balance struct {
 	UnsettledCash                float64 `json:"unsettledCash"`
 }
 
+type OrderLegCollection struct {
+	OrderLegType   string     `json:"orderLegType"`
+	LegID          int        `json:"legId"`
+	Instrument     Instrument `json:"instrument"`
+	Instruction    string     `json:"instruction"`
+	PositionEffect string     `json:"positionEffect"`
+	Quantity       int        `json:"quantity"`
+	QuantityType   string     `json:"quantityType"`
+}
+
+type Order struct {
+	Session    string `json:"session"`
+	Duration   string `json:"duration"`
+	OrderType  string `json:"orderType"`
+	CancelTime struct {
+		Date        string `json:"date"`
+		ShortFormat bool   `json:"shortFormat"`
+	} `json:"cancelTime"`
+	ComplexOrderStrategyType string                `json:"complexOrderStrategyType"`
+	Quantity                 int                   `json:"quantity"`
+	FilledQuantity           int                   `json:"filledQuantity"`
+	RemainingQuantity        int                   `json:"remainingQuantity"`
+	RequestedDestination     string                `json:"requestedDestination"`
+	DestinationLinkName      string                `json:"destinationLinkName"`
+	ReleaseTime              string                `json:"releaseTime"`
+	StopPrice                int                   `json:"stopPrice"`
+	StopPriceLinkBasis       string                `json:"stopPriceLinkBasis"`
+	StopPriceLinkType        string                `json:"stopPriceLinkType"`
+	StopPriceOffset          int                   `json:"stopPriceOffset"`
+	StopType                 string                `json:"stopType"`
+	PriceLinkBasis           string                `json:"priceLinkBasis"`
+	PriceLinkType            string                `json:"priceLinkType"`
+	Price                    int                   `json:"price"`
+	TaxLotMethod             string                `json:"taxLotMethod"`
+	OrderLegCollection       []*OrderLegCollection `json:"orderLegCollection"`
+	ActivationPrice          int                   `json:"activationPrice"`
+	SpecialInstruction       string                `json:"specialInstruction"`
+	OrderStrategyType        string                `json:"orderStrategyType"`
+	OrderID                  int                   `json:"orderId"`
+	Cancelable               bool                  `json:"cancelable"`
+	Editable                 bool                  `json:"editable"`
+	Status                   string                `json:"status"`
+	EnteredTime              string                `json:"enteredTime"`
+	CloseTime                string                `json:"closeTime"`
+	Tag                      string                `json:"tag"`
+	AccountID                int                   `json:"accountId"`
+	OrderActivityCollection  []*Execution          `json:"orderActivityCollection"`
+	ReplacingOrderCollection []*Order              `json:"replacingOrderCollection"`
+	ChildOrderStrategies     []*Order              `json:"childOrderStrategies"`
+	StatusDescription        string                `json:"statusDescription"`
+}
+
+type ExecutionLeg struct {
+	LegID             int64   `json:"legId"`
+	Quantity          float64 `json:"quantity"`
+	MismarkedQuantity float64 `json:"mismarkedQuantity"`
+	Price             float64 `json:"price"`
+	Time              string  `json:"time"`
+}
+
+type Execution struct {
+	ActivityType           string          `json:"activityType"`  //"'EXECUTION' or 'ORDER_ACTION'",
+	ExecutionType          string          `json:"executionType"` //"'FILL'",
+	Quantity               float64         `json:"quantity"`
+	OrderRemainingQuantity float64         `json:"orderRemainingQuantity"`
+	ExecutionLegs          []*ExecutionLeg `json:"executionLegs"`
+}
+
 // AccountsService handles communication with the account related methods of
 // the TDAmeritrade API.
 //
@@ -176,27 +245,11 @@ type AccountOptions struct {
 	Orders   bool
 }
 
-func (s *AccountsService) GetAccounts(ctx context.Context, opts *AccountOptions) (*Accounts, *Response, error) {
-	u := "accounts"
-	if opts != nil {
-		if opts.Position {
-			u = fmt.Sprintf("%s?fields=%s", u, "positions")
-		}
-		if opts.Orders {
-			u = fmt.Sprintf("%s,%s", u, "orders")
-		}
-	}
-	req, err := s.client.NewRequest("GET", u, nil)
-
-	if err != nil {
-		return nil, nil, err
-	}
-	accounts := new(Accounts)
-	resp, err := s.client.Do(ctx, req, accounts)
-	if err != nil {
-		return nil, resp, err
-	}
-	return accounts, resp, err
+type OrderParams struct {
+	MaxResults int
+	From       time.Time
+	To         time.Time
+	Status     string
 }
 
 func (i *Instrument) UnmarshalJSON(bs []byte) (err error) {
@@ -272,4 +325,114 @@ func (i *Instrument) MarshalJSON() ([]byte, error) {
 	default:
 		return nil, fmt.Errorf("unexpected type %T: %v", data, data)
 	}
+}
+
+func (s *AccountsService) GetAccounts(ctx context.Context, opts *AccountOptions) (*Accounts, *Response, error) {
+	u := "accounts"
+	if opts != nil {
+		if opts.Position {
+			u = fmt.Sprintf("%s?fields=%s", u, "positions")
+		}
+		if opts.Orders {
+			u = fmt.Sprintf("%s,%s", u, "orders")
+		}
+	}
+	req, err := s.client.NewRequest("GET", u, nil)
+
+	if err != nil {
+		return nil, nil, err
+
+	}
+	accounts := new(Accounts)
+	resp, err := s.client.Do(ctx, req, accounts)
+	if err != nil {
+		return nil, resp, err
+	}
+	return accounts, resp, err
+}
+
+func (s *AccountsService) GetAccount(ctx context.Context, accountID string, opts *AccountOptions) (*Account, *Response, error) {
+	u := fmt.Sprintf("accounts/%s", accountID)
+	if opts != nil {
+		if opts.Position {
+			u = fmt.Sprintf("%s?fields=%s", u, "positions")
+		}
+		if opts.Orders {
+			u = fmt.Sprintf("%s,%s", u, "orders")
+		}
+	}
+	req, err := s.client.NewRequest("GET", u, nil)
+
+	if err != nil {
+		return nil, nil, err
+
+	}
+	account := new(Account)
+	resp, err := s.client.Do(ctx, req, account)
+	if err != nil {
+		return nil, resp, err
+	}
+	return account, resp, err
+}
+
+func (s *AccountsService) PlaceOrder(ctx context.Context, accountID string, order *Order) (*Response, error) {
+	u := fmt.Sprintf("accounts/%s/orders", accountID)
+	if order == nil {
+		return nil, fmt.Errorf("order is nil")
+	}
+
+	req, err := s.client.NewRequest("POST", u, order)
+	if err != nil {
+		return nil, err
+	}
+	return s.client.Do(ctx, req, nil)
+}
+
+func (s *AccountsService) CancelOrder(ctx context.Context, accountID, orderID string) (*Response, error) {
+	u := fmt.Sprintf("accounts/%s/orders/%s", accountID, orderID)
+	req, err := s.client.NewRequest("DELETE", u, nil)
+	if err != nil {
+		return nil, err
+	}
+	return s.client.Do(ctx, req, nil)
+}
+
+func (s *AccountsService) ReplaceOrder(ctx context.Context, accountID string, orderID string, order *Order) (*Response, error) {
+	u := fmt.Sprintf("accounts/%s/orders/%s", accountID, orderID)
+	if order == nil {
+		return nil, fmt.Errorf("order is nil")
+	}
+
+	req, err := s.client.NewRequest("PUT", u, order)
+	if err != nil {
+		return nil, err
+	}
+	return s.client.Do(ctx, req, nil)
+}
+
+func (s *AccountsService) GetOrder(ctx context.Context, accountID, orderID string) (*Response, error) {
+	u := fmt.Sprintf("accounts/%s/orders/%s", accountID, orderID)
+	req, err := s.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, err
+	}
+	return s.client.Do(ctx, req, nil)
+}
+
+func (s *AccountsService) GetOrderByPath(ctx context.Context, accountID string, orderParams *OrderParams) (*Response, error) {
+	u := fmt.Sprintf("accounts/%s/orders", accountID)
+	req, err := s.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, err
+	}
+	return s.client.Do(ctx, req, nil)
+}
+
+func (s *AccountsService) GetOrderByQuery(ctx context.Context, accountID string, orderParams *OrderParams) (*Response, error) {
+	u := fmt.Sprintf("accounts/%s/orders", accountID)
+	req, err := s.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, err
+	}
+	return s.client.Do(ctx, req, nil)
 }
