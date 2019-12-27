@@ -28,6 +28,7 @@ type Client struct {
 	// services used for talking to different parts of the tdameritrade api
 	PriceHistory *PriceHistoryService
 	Account      *AccountsService
+	MarketHours  *MarketHoursService
 }
 
 type Response struct {
@@ -52,6 +53,7 @@ func NewClient(httpClient *http.Client) (*Client, error) {
 	c := &Client{client: httpClient, BaseURL: b}
 	c.PriceHistory = &PriceHistoryService{client: c}
 	c.Account = &AccountsService{client: c}
+	c.MarketHours = &MarketHoursService{client: c}
 
 	return c, nil
 }

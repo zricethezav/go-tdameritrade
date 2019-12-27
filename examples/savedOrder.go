@@ -45,7 +45,7 @@ func main() {
 	}
 
 	// more examples here: https://developer.tdameritrade.com/content/place-order-samples
-	resp, err := c.Account.PlaceOrder(ctx, accountID, &tdameritrade.Order{
+	resp, err := c.Account.CreateSavedOrder(ctx, accountID, &tdameritrade.Order{
 		Session: "NORMAL",
 		Duration: "DAY",
 		OrderType: "MARKET",
@@ -53,7 +53,7 @@ func main() {
 		OrderLegCollection: []*tdameritrade.OrderLegCollection{
 			{
 				Instruction: "Sell",
-				Quantity: 2,
+				Quantity: 1,
 				Instrument: tdameritrade.Instrument{
 					AssetType: "EQUITY",
 					Data: &tdameritrade.Equity{
