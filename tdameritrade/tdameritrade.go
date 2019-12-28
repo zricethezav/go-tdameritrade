@@ -29,6 +29,8 @@ type Client struct {
 	PriceHistory *PriceHistoryService
 	Account      *AccountsService
 	MarketHours  *MarketHoursService
+	Quotes       *QuotesService
+	Instrument   *InstrumentService
 }
 
 type Response struct {
@@ -54,6 +56,8 @@ func NewClient(httpClient *http.Client) (*Client, error) {
 	c.PriceHistory = &PriceHistoryService{client: c}
 	c.Account = &AccountsService{client: c}
 	c.MarketHours = &MarketHoursService{client: c}
+	c.Quotes = &QuotesService{client: c}
+	c.Instrument = &InstrumentService{client: c}
 
 	return c, nil
 }
