@@ -1,2 +1,2 @@
 # go-tdameritrade
-go client for the tdameritrade aoi
+go client for the tdameritrade api
