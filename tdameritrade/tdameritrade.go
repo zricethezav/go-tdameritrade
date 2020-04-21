@@ -31,6 +31,7 @@ type Client struct {
 	MarketHours  *MarketHoursService
 	Quotes       *QuotesService
 	Instrument   *InstrumentService
+	Chains       *ChainsService
 }
 
 type Response struct {
@@ -58,6 +59,7 @@ func NewClient(httpClient *http.Client) (*Client, error) {
 	c.MarketHours = &MarketHoursService{client: c}
 	c.Quotes = &QuotesService{client: c}
 	c.Instrument = &InstrumentService{client: c}
+	c.Chains = &ChainsService{client: c}
 
 	return c, nil
 }
