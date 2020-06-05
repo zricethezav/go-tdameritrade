@@ -32,6 +32,7 @@ type Client struct {
 	Quotes       *QuotesService
 	Instrument   *InstrumentService
 	Chains       *ChainsService
+	Mover        *MoverService
 }
 
 type Response struct {
@@ -60,6 +61,7 @@ func NewClient(httpClient *http.Client) (*Client, error) {
 	c.Quotes = &QuotesService{client: c}
 	c.Instrument = &InstrumentService{client: c}
 	c.Chains = &ChainsService{client: c}
+	c.Mover = &MoverService{client: c}
 
 	return c, nil
 }
