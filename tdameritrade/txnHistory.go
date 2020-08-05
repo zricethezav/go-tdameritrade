@@ -75,24 +75,21 @@ type TransactionInstrument struct {
 
 // TransactionHistoryOptions is parsed and translated to query options in the https request
 type TransactionHistoryOptions struct {
-	Type      string    `url:"type,omitempty"`
-	Symbol    string    `url:"symbol,omitempty"`
-	EndDate   time.Time `url:"endDate,omitempty"`
-	StartDate time.Time `url:"startDate,omitempty"`
+	Type      string        `url:"type,omitempty"`
+	Symbol    string        `url:"symbol,omitempty"`
+	TimeRange *TxnTimeRange `url:"omitempty"`
 }
 
-// EncodeValues handles converting TransactionHistoryOptions into the right shape (date formats)
-func (t *TransactionHistoryOptions) EncodeValues(key string, v *url.Values) error {
-	switch key {
-	case "Type":
-		v.Add(key, t.Type)
-	case "Symbol":
-		v.Add(key, t.Symbol)
-	case "EndDate":
-		v.Add(key, t.EndDate.Format("2006-01-02"))
-	case "StartDate":
-		v.Add(key, t.StartDate.Format("2006-01-02"))
-	}
+// TxnTimeRange holds the start and end time that later get parsed into the UTC yyyy-MM-dd ISO-8601 format
+type TxnTimeRange struct {
+	Start time.Time
+	End   time.Time
+}
+
+// EncodeValues handles converting TxnTimeRange into the ISO-8601 yyyy-MM-dd UTC dates TD expects
+func (t *TxnTimeRange) EncodeValues(key string, v *url.Values) error {
+	v.Set("startDate", t.Start.In(time.UTC).Format("2006-01-02"))
+	v.Set("endDate", t.End.In(time.UTC).Format("2006-01-02"))
 	return nil
 }
 
