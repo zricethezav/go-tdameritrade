@@ -3,6 +3,9 @@ package tdameritrade
 import (
 	"context"
 	"fmt"
+	"time"
+
+	"github.com/google/go-querystring/query"
 )
 
 // Transactions is a slice of transactions
@@ -26,8 +29,20 @@ type Transaction struct {
 	CashBalanceEffectFlag         bool            `json:"cashBalanceEffectFlag"`
 	ACHStatus                     string          `json:"achStatus"`
 	AccruedInterest               float64         `json:"accruedInterest"`
-	Fees                          interface{}     `json:"fees"`
+	Fees                          TransactionFees `json:"fees"`
 	TransactionItem               TransactionItem `json:"transactionItem"`
+}
+
+// TransactionFees contains fees related to the transaction
+type TransactionFees struct {
+	AdditionalFee float64 `json:"additionalFee"`
+	CdscFee       float64 `json:"cdscFee"`
+	Commission    float64 `json:"commission"`
+	OptRegFee     float64 `json:"optRegFee"`
+	OtherCharges  float64 `json:"otherCharges"`
+	RFee          float64 `json:"rFee"`
+	RegFee        float64 `json:"regFee"`
+	SecFee        float64 `json:"secFee"`
 }
 
 // TransactionItem is an item within a transaction response
@@ -55,6 +70,14 @@ type TransactionInstrument struct {
 	AssetType            string  `json:"assetType"`
 	BondMaturityDate     string  `json:"bondMaturityDate"`
 	BondInterestRate     float64 `json:"bondInterestRate"`
+}
+
+// TransactionHistoryOptions is parsed and translated to query options in the https request
+type TransactionHistoryOptions struct {
+	Type      string    `url:"type"`
+	Symbol    string    `url:"symbol"`
+	EndDate   time.Time `url:"endDate"`
+	StartDate time.Time `url:"startDate"`
 }
 
 // TransactionHistoryService handles communication with the transaction history related methods of
@@ -85,8 +108,15 @@ func (s *TransactionHistoryService) GetTransaction(ctx context.Context, accountI
 
 // GetTransactions gets all transaction by account
 // TDAmeritrade API Docs: https://developer.tdameritrade.com/transaction-history/apis/get/accounts/%7BaccountId%7D/transactions-0
-func (s *TransactionHistoryService) GetTransactions(ctx context.Context, accountID string) (*Transactions, *Response, error) {
+func (s *TransactionHistoryService) GetTransactions(ctx context.Context, accountID string, opts *TransactionHistoryOptions) (*Transactions, *Response, error) {
 	u := fmt.Sprintf("accounts/%s/transactions", accountID)
+	if opts != nil {
+		q, err := query.Values(opts)
+		if err != nil {
+			return nil, nil, err
+		}
+		u = fmt.Sprintf("%s?%s", u, q.Encode())
+	}
 
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
