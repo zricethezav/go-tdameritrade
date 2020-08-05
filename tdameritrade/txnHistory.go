@@ -3,6 +3,7 @@ package tdameritrade
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/google/go-querystring/query"
@@ -74,10 +75,25 @@ type TransactionInstrument struct {
 
 // TransactionHistoryOptions is parsed and translated to query options in the https request
 type TransactionHistoryOptions struct {
-	Type      string    `url:"type"`
-	Symbol    string    `url:"symbol"`
-	EndDate   time.Time `url:"endDate"`
-	StartDate time.Time `url:"startDate"`
+	Type      string    `url:"type,omitempty"`
+	Symbol    string    `url:"symbol,omitempty"`
+	EndDate   time.Time `url:"endDate,omitempty"`
+	StartDate time.Time `url:"startDate,omitempty"`
+}
+
+// EncodeValues handles converting TransactionHistoryOptions into the right shape (date formats)
+func (t *TransactionHistoryOptions) EncodeValues(key string, v *url.Values) error {
+	switch key {
+	case "Type":
+		v.Add(key, t.Type)
+	case "Symbol":
+		v.Add(key, t.Symbol)
+	case "EndDate":
+		v.Add(key, t.EndDate.Format("2006-01-02"))
+	case "StartDate":
+		v.Add(key, t.StartDate.Format("2006-01-02"))
+	}
+	return nil
 }
 
 // TransactionHistoryService handles communication with the transaction history related methods of
