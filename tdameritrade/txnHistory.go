@@ -28,6 +28,7 @@ type Transaction struct {
 	TransactionSubType            string          `json:"transactionSubType"`
 	TransactionID                 int64           `json:"transactionId"`
 	CashBalanceEffectFlag         bool            `json:"cashBalanceEffectFlag"`
+	Description                   bool            `json:"description"`
 	ACHStatus                     string          `json:"achStatus"`
 	AccruedInterest               float64         `json:"accruedInterest"`
 	Fees                          TransactionFees `json:"fees"`
@@ -80,7 +81,7 @@ type TransactionHistoryOptions struct {
 	TimeRange *TxnTimeRange `url:"omitempty"`
 }
 
-// TxnTimeRange holds the start and end time that later get parsed into the UTC yyyy-MM-dd ISO-8601 format
+// TxnTimeRange holds the start and end time that get parsed into the UTC yyyy-MM-dd ISO-8601 format
 type TxnTimeRange struct {
 	Start time.Time
 	End   time.Time
