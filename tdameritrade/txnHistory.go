@@ -28,7 +28,7 @@ type Transaction struct {
 	TransactionSubType            string          `json:"transactionSubType"`
 	TransactionID                 int64           `json:"transactionId"`
 	CashBalanceEffectFlag         bool            `json:"cashBalanceEffectFlag"`
-	Description                   bool            `json:"description"`
+	Description                   string          `json:"description"`
 	ACHStatus                     string          `json:"achStatus"`
 	AccruedInterest               float64         `json:"accruedInterest"`
 	Fees                          TransactionFees `json:"fees"`
