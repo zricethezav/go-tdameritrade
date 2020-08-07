@@ -3,8 +3,6 @@ package tdameritrade
 import (
 	"context"
 	"fmt"
-	"net/url"
-	"time"
 
 	"github.com/google/go-querystring/query"
 )
@@ -76,26 +74,12 @@ type TransactionInstrument struct {
 
 // TransactionHistoryOptions is parsed and translated to query options in the https request
 type TransactionHistoryOptions struct {
-	Type      string        `url:"type,omitempty"`
-	Symbol    string        `url:"symbol,omitempty"`
-	TimeRange *TxnTimeRange `url:"omitempty"`
-}
-
-// TxnTimeRange holds the start and end time that get parsed into the UTC yyyy-MM-dd ISO-8601 format
-type TxnTimeRange struct {
-	Start time.Time
-	End   time.Time
-}
-
-// EncodeValues handles converting TxnTimeRange into the ISO-8601 yyyy-MM-dd UTC dates TD expects
-func (t *TxnTimeRange) EncodeValues(key string, v *url.Values) error {
-	if !t.Start.IsZero() {
-		v.Set("startDate", t.Start.In(time.UTC).Format("2006-01-02"))
-	}
-	if !t.End.IsZero() {
-		v.Set("endDate", t.End.In(time.UTC).Format("2006-01-02"))
-	}
-	return nil
+	Type   string `url:"type,omitempty"`
+	Symbol string `url:"symbol,omitempty"`
+	// ISO8601 format, day granularity yyyy-MM-dd
+	StartDate string `url:"startDate,omitempty"`
+	// ISO8601 format, day granularity yyyy-MM-dd
+	EndDate string `url:"endDate,omitempty"`
 }
 
 // TransactionHistoryService handles communication with the transaction history related methods of
