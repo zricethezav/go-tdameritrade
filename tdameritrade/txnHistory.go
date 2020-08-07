@@ -89,8 +89,12 @@ type TxnTimeRange struct {
 
 // EncodeValues handles converting TxnTimeRange into the ISO-8601 yyyy-MM-dd UTC dates TD expects
 func (t *TxnTimeRange) EncodeValues(key string, v *url.Values) error {
-	v.Set("startDate", t.Start.In(time.UTC).Format("2006-01-02"))
-	v.Set("endDate", t.End.In(time.UTC).Format("2006-01-02"))
+	if !t.Start.IsZero() {
+		v.Set("startDate", t.Start.In(time.UTC).Format("2006-01-02"))
+	}
+	if !t.End.IsZero() {
+		v.Set("endDate", t.End.In(time.UTC).Format("2006-01-02"))
+	}
 	return nil
 }
 
