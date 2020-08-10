@@ -94,10 +94,13 @@ type QuoteDelays struct {
 	IsForexDelayed  bool `json:"isForexDelayed"`
 }
 
+// UserService exposes operations on a user's preferences.
+// See https://developer.tdameritrade.com/user-principal/apis.
 type UserService struct {
 	client *Client
 }
 
+// GetPreferences returns Preferences for a specific account.
 func (s *UserService) GetPreferences(ctx context.Context, accountID string) (*Preferences, *Response, error) {
 	u := fmt.Sprintf("accounts/%s/preferences", accountID)
 	req, err := s.client.NewRequest("GET", u, nil)
@@ -114,6 +117,7 @@ func (s *UserService) GetPreferences(ctx context.Context, accountID string) (*Pr
 	return preferences, resp, err
 }
 
+// GetStreamerSubscriptionKeys returns Subscription Keys for provided accounts or default accounts.
 func (s *UserService) GetStreamerSubscriptionKeys(ctx context.Context, accountIDs ...string) (*StreamerSubscriptionKeys, *Response, error) {
 	u := fmt.Sprintf("userprincipals/streamersubscriptionkeys?accountIds=%s", strings.Join(accountIDs, ","))
 	req, err := s.client.NewRequest("GET", u, nil)
@@ -130,6 +134,7 @@ func (s *UserService) GetStreamerSubscriptionKeys(ctx context.Context, accountID
 	return streamerSubscriptionKeys, resp, err
 }
 
+// GetUserPrincipals returns User Principal details.
 func (s *UserService) GetUserPrincipals(ctx context.Context, fields ...string) (*UserPrincipal, *Response, error) {
 	u := "userpricipals"
 	if len(fields) > 0 {
@@ -150,6 +155,8 @@ func (s *UserService) GetUserPrincipals(ctx context.Context, fields ...string) (
 	return userPrincipal, resp, err
 }
 
+// UpdatePreferences updates Preferences for a specific account.
+// Please note that the directOptionsRouting and directEquityRouting values cannot be modified via this operation
 func (s *UserService) UpdatePreferences(ctx context.Context, accountID string, newPreferences *Preferences) (*Response, error) {
 	if newPreferences == nil {
 		return nil, fmt.Errorf("newPreferences is nil")
