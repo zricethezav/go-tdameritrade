@@ -101,6 +101,7 @@ type UserService struct {
 }
 
 // GetPreferences returns Preferences for a specific account.
+// See https://developer.tdameritrade.com/user-principal/apis/get/accounts/%7BaccountId%7D/preferences-0
 func (s *UserService) GetPreferences(ctx context.Context, accountID string) (*Preferences, *Response, error) {
 	u := fmt.Sprintf("accounts/%s/preferences", accountID)
 	req, err := s.client.NewRequest("GET", u, nil)
@@ -118,6 +119,7 @@ func (s *UserService) GetPreferences(ctx context.Context, accountID string) (*Pr
 }
 
 // GetStreamerSubscriptionKeys returns Subscription Keys for provided accounts or default accounts.
+// See https://developer.tdameritrade.com/user-principal/apis/get/userprincipals/streamersubscriptionkeys-0
 func (s *UserService) GetStreamerSubscriptionKeys(ctx context.Context, accountIDs ...string) (*StreamerSubscriptionKeys, *Response, error) {
 	u := fmt.Sprintf("userprincipals/streamersubscriptionkeys?accountIds=%s", strings.Join(accountIDs, ","))
 	req, err := s.client.NewRequest("GET", u, nil)
@@ -135,6 +137,8 @@ func (s *UserService) GetStreamerSubscriptionKeys(ctx context.Context, accountID
 }
 
 // GetUserPrincipals returns User Principal details.
+// Valid values for `fields` are "streamerSubscriptionKeys", "streamerConnectionInfo", "preferences" and  "surrogateIds"
+// See https://developer.tdameritrade.com/user-principal/apis/get/userprincipals-0
 func (s *UserService) GetUserPrincipals(ctx context.Context, fields ...string) (*UserPrincipal, *Response, error) {
 	u := "userpricipals"
 	if len(fields) > 0 {
@@ -156,7 +160,8 @@ func (s *UserService) GetUserPrincipals(ctx context.Context, fields ...string) (
 }
 
 // UpdatePreferences updates Preferences for a specific account.
-// Please note that the directOptionsRouting and directEquityRouting values cannot be modified via this operation
+// Please note that the directOptionsRouting and directEquityRouting values cannot be modified via this operation, even though they are in the request body.
+// See https://developer.tdameritrade.com/user-principal/apis/put/accounts/%7BaccountId%7D/preferences-0
 func (s *UserService) UpdatePreferences(ctx context.Context, accountID string, newPreferences *Preferences) (*Response, error) {
 	if newPreferences == nil {
 		return nil, fmt.Errorf("newPreferences is nil")
