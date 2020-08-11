@@ -95,7 +95,7 @@ func (a *Authenticator) FinishOAuth2Flow(ctx context.Context, w http.ResponseWri
 		return nil, err
 	}
 
-	// Sanity check: this should never happen as long as users use StartOAuth2Flow.
+	// Sanity check: users should never return an empty string from GetState.
 	// Prevent users from making themselves vulnerable to CSRF by forcing them to set state.
 	if len(expectedState) == 0 {
 		return nil, ErrNoState
