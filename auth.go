@@ -68,7 +68,7 @@ func (a *Authenticator) StartOAuth2Flow(w http.ResponseWriter, req *http.Request
 		return "", err
 	}
 
-	// Instead, allow callers to store the state we give them, and present it to us when we ask for it again.
+	// Instead, have callers store the state we give them and present it to us when we ask for it again.
 	state := base64.RawURLEncoding.EncodeToString(b)
 	err := a.Store.StoreState(state, w, req)
 	if err != nil {
