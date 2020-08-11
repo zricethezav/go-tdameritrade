@@ -146,7 +146,6 @@ func (h *TDHandlers) Quote(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	// pass an http client with auth
 	clientID := os.Getenv("TDAMERITRADE_CLIENT_ID")
 	if clientID == "" {
 		log.Fatal("Unauthorized: No client ID present")
