@@ -81,11 +81,11 @@ func (a *Authenticator) StartOAuth2Flow(w http.ResponseWriter, req *http.Request
 // It verifies that TD Ameritrade has returned the expected state to prevent CSRF attacks and returns an authenticated `Client` on success.
 func (a *Authenticator) FinishOAuth2Flow(ctx context.Context, w http.ResponseWriter, req *http.Request) (*Client, error) {
 	code, ok := req.URL.Query()["code"]
-	if !ok || len(code) == 0 {
+	if !ok || len(code) == 0 || code[0] == "" {
 		return nil, ErrNoCode
 	}
 	state, ok := req.URL.Query()["state"]
-	if !ok || len(state) == 0 {
+	if !ok || len(state) == 0 || len(state[0]) == 0 {
 		return nil, ErrNoState
 	}
 
@@ -97,7 +97,7 @@ func (a *Authenticator) FinishOAuth2Flow(ctx context.Context, w http.ResponseWri
 	// Sanity check: this should never happen as long as users use StartOAuth2Flow.
 	// Prevent users from making themselves vulnerable to CSRF by forcing them to set state.
 	if len(expectedState) == 0 {
-		return nil, fmt.Errorf("state cannot be empty")
+		return nil, ErrNoState
 	}
 
 	if state[0] != expectedState {

@@ -108,7 +108,7 @@ func TestFinishOAuth2RejectsEmptyState(t *testing.T) {
 		t.Fatalf("empty state not rejected.")
 	}
 
-	if err.Error() != "state cannot be empty" {
+	if err.Error() != "missing state in request from TD Ameritrade" {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
@@ -144,5 +144,35 @@ func TestFinishOAuth2RejectsInvalidState(t *testing.T) {
 
 	if client != nil {
 		t.Fatalf("client returned despite invalid state.")
+	}
+}
+
+func TestFinishOAuth2RejectsEmptyCode(t *testing.T) {
+	authenticator := &Authenticator{
+		Store: &testStore{},
+		OAuth2: oauth2.Config{
+			ClientID: "CLIENTID",
+			Endpoint: oauth2.Endpoint{
+				TokenURL: "https://api.tdameritrade.com/v1/oauth2/token",
+				AuthURL:  "https://auth.tdameritrade.com/auth",
+			},
+			RedirectURL: "https://localhost:8080/callback",
+		},
+	}
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/callback?code=&state=state", nil)
+	ctx := context.Background()
+	client, err := authenticator.FinishOAuth2Flow(ctx, w, req)
+	if err == nil {
+		t.Fatalf("empty code not rejected.")
+	}
+
+	if err.Error() != "missing code in request from TD Ameritrade" {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if client != nil {
+		t.Fatalf("client returned despite empty code.")
 	}
 }
