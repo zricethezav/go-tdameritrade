@@ -128,7 +128,7 @@ type SecuritiesAccount struct {
 		EnteredTime              string   `json:"enteredTime"`
 		CloseTime                string   `json:"closeTime"`
 		Tag                      string   `json:"tag"`
-		AccountID                int64    `json:"accountId, string"`
+		AccountID                int64    `json:"accountId"`
 		OrderActivityCollection  []string `json:"orderActivityCollection"`
 		ReplacingOrderCollection []struct {
 		} `json:"replacingOrderCollection"`
@@ -463,7 +463,7 @@ func (s *AccountsService) DeleteSavedOrder(ctx context.Context, accountID, saved
 	return s.client.Do(ctx, req, nil)
 }
 
-func (s *AccountsService) GetSavedOrder(ctx context.Context, accountID ,savedOrderID string, orderParams *OrderParams) (*Response, error) {
+func (s *AccountsService) GetSavedOrder(ctx context.Context, accountID, savedOrderID string, orderParams *OrderParams) (*Response, error) {
 	u := fmt.Sprintf("accounts/%s/savedorders/%s", accountID, savedOrderID)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
@@ -485,4 +485,3 @@ func (s *AccountsService) ReplaceSavedOrder(ctx context.Context, accountID, save
 	req.Header.Set("Content-Type", "application/json")
 	return s.client.Do(ctx, req, nil)
 }
-
