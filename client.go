@@ -35,6 +35,7 @@ type Client struct {
 	Mover              *MoverService
 	TransactionHistory *TransactionHistoryService
 	User               *UserService
+	Watchlist          *WatchlistService
 }
 
 type Response struct {
@@ -66,6 +67,7 @@ func NewClient(httpClient *http.Client) (*Client, error) {
 	c.Mover = &MoverService{client: c}
 	c.TransactionHistory = &TransactionHistoryService{client: c}
 	c.User = &UserService{client: c}
+	c.Watchlist = &WatchlistService{client: c}
 
 	return c, nil
 }
