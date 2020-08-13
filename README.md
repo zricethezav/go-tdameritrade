@@ -16,4 +16,20 @@ go-tdameritrade doesn't support streaming yet.
 There is an example of using OAuth2 to authenticate a user and use the services on the TD Ameritrade API in [examples/webauth/webauth.go](https://github.com/JonCooperWorks/go-tdameritrade/blob/master/examples/webauth/webauth.go).
 Authentication is handled by the ```Authenticator``` struct and its methods ```StartOAuth2Flow``` and ```FinishOAuth2Flow``` (see [auth.go](https://github.com/JonCooperWorks/go-tdameritrade/blob/master/auth.go)).
 
+The library handles state generation and the OAuth2 flow.
+Users simply implement the ```PersistentStore``` interface (see [auth.go](https://github.com/JonCooperWorks/go-tdameritrade/blob/master/auth.go)) and tell it how to store and retrieve OAuth2 state and an ```oauth2.Token``` with the logged in user's credentials.
+
+```
+// PersistentStore is meant to persist data from TD Ameritrade that is needed between requests.
+// Implementations must return the same value they set for a user in StoreState in GetState, or the login process will fail.
+// It is meant to allow credentials to be stored in cookies, JWTs and anything else you can think of.
+type PersistentStore interface {
+	StoreToken(token *oauth2.Token, w http.ResponseWriter, req *http.Request) error
+	GetToken(req *http.Request) (*oauth2.Token, error)
+	StoreState(state string, w http.ResponseWriter, req *http.Request) error
+	GetState(*http.Request) (string, error)
+}
+```
+
+
 Use at your own risk.
