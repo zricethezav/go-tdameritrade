@@ -88,7 +88,6 @@ func (h *TDHandlers) Authenticate(w http.ResponseWriter, req *http.Request) {
 	redirectURL, err := h.authenticator.StartOAuth2Flow(w, req)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -100,7 +99,6 @@ func (h *TDHandlers) Callback(w http.ResponseWriter, req *http.Request) {
 	_, err := h.authenticator.FinishOAuth2Flow(ctx, w, req)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
