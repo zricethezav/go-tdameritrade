@@ -75,7 +75,7 @@ type Client struct {
 
 ## Examples
 
-More examples are in the [examples/](https://github.com/JonCooperWorks/go-tdameritrade/tree/master/examples) directory.
+More examples are in the [examples](https://github.com/JonCooperWorks/go-tdameritrade/tree/master/examples) directory.
 
 Looking up a stock quote using the API.
 ```
