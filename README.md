@@ -77,6 +77,37 @@ type Client struct {
 
 More examples are in the [examples](https://github.com/JonCooperWorks/go-tdameritrade/tree/master/examples) directory.
 
+
+### Authenticating a user with OAuth2
+```
+type TDHandlers struct {
+	authenticator *tdameritrade.Authenticator
+}
+
+func (h *TDHandlers) Authenticate(w http.ResponseWriter, req *http.Request) {
+	redirectURL, err := h.authenticator.StartOAuth2Flow(w, req)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, req, redirectURL, http.StatusTemporaryRedirect)
+}
+
+func (h *TDHandlers) Callback(w http.ResponseWriter, req *http.Request) {
+	ctx := context.Background()
+	_, err := h.authenticator.FinishOAuth2Flow(ctx, w, req)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, req, "/quote?ticker=SPY", http.StatusTemporaryRedirect)
+}
+```
+
 #### Looking up a stock quote using the API.
 ```
 type TDHandlers struct {
@@ -113,5 +144,6 @@ func (h *TDHandlers) Quote(w http.ResponseWriter, req *http.Request) {
 
 }
 ```
+
 
 Use at your own risk.
