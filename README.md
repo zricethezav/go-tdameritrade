@@ -15,8 +15,8 @@ go-tdameritrade doesn't support streaming yet.
 ## Authentication with TD Ameritrade
 There is an example of using OAuth2 to authenticate a user and use the services on the TD Ameritrade API in [examples/webauth/webauth.go](https://github.com/JonCooperWorks/go-tdameritrade/blob/master/examples/webauth/webauth.go).
 Authentication is handled by the ```Authenticator``` struct and its methods ```StartOAuth2Flow``` and ```FinishOAuth2Flow```.
-You can get an ```oauth2.Token``` from an authenticated request withh the ```AuthenticatedClient``` method.
-See [auth.go](https://github.com/JonCooperWorks/go-tdameritrade/blob/master/auth.go)
+You can get an authenticated ```tdameritrade.Client``` from an authenticated request with the ```AuthenticatedClient``` method, and use that to interact with the TD API.
+See [auth.go](https://github.com/JonCooperWorks/go-tdameritrade/blob/master/auth.go).
 
 ```
 // Authenticator is a helper for TD Ameritrade's authentication.
