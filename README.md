@@ -45,5 +45,73 @@ type PersistentStore interface {
 }
 ```
 
+## Interacting with the TD Ameritrade API
+The library is centered around the ```tdameritrade.Client```.
+It allows access to all services exposed by the TD Ameritrade REST API.
+More information about each service can be found on TD Ameritrade's [developer website](https://developer.tdameritrade.com/apis).
+
+```
+// A Client manages communication with the TD-Ameritrade API.
+type Client struct {
+	client *http.Client // HTTP client used to communicate with the API.
+
+	// Base URL for API requests. Defaults to the public TD-Ameritrade API, but can be
+	// set to any endpoint. This allows for more manageable testing.
+	BaseURL *url.URL
+
+	// services used for talking to different parts of the tdameritrade api
+	PriceHistory       *PriceHistoryService
+	Account            *AccountsService
+	MarketHours        *MarketHoursService
+	Quotes             *QuotesService
+	Instrument         *InstrumentService
+	Chains             *ChainsService
+	Mover              *MoverService
+	TransactionHistory *TransactionHistoryService
+	User               *UserService
+	Watchlist          *WatchlistService
+}
+```
+
+## Examples
+
+More examples are in the [examples/](https://github.com/JonCooperWorks/go-tdameritrade/tree/master/examples) directory.
+
+Looking up a stock quote using the API.
+```
+type TDHandlers struct {
+	authenticator *tdameritrade.Authenticator
+}
+
+func (h *TDHandlers) Quote(w http.ResponseWriter, req *http.Request) {
+	ctx := context.Background()
+	client, err := h.authenticator.AuthenticatedClient(ctx, req)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	ticker, ok := req.URL.Query()["ticker"]
+	if !ok || len(ticker) == 0 {
+		w.Write([]byte("ticker is required"))
+		return
+	}
+
+	quote, _, err := client.Quotes.GetQuotes(ctx, ticker[0])
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	body, err := json.Marshal(quote)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	w.Write(body)
+
+}
+```
 
 Use at your own risk.
