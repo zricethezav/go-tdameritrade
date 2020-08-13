@@ -46,17 +46,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Preferences: [Status: %d] %+v", resp.StatusCode, *preferences)
+	log.Printf("Preferences: [Status: %d] %+v", resp.StatusCode, *preferences)
 
 	userPrincipals, resp, err := c.User.GetUserPrincipals(ctx, "streamerSubscriptionKeys", "streamerConnectionInfo")
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("User Principals: [Status: %d] %+v", resp.StatusCode, *userPrincipals)
+	log.Printf("User Principals: [Status: %d] %+v", resp.StatusCode, *userPrincipals)
 
 	streamerSubscriptionKeys, resp, err := c.User.GetStreamerSubscriptionKeys(ctx, accountID)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Streamer Subscription Keys: [Status: %d] %+v", resp.StatusCode, *streamerSubscriptionKeys)
+	log.Printf("Streamer Subscription Keys: [Status: %d] %+v", resp.StatusCode, *streamerSubscriptionKeys)
 }
