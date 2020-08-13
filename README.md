@@ -77,7 +77,7 @@ type Client struct {
 
 More examples are in the [examples](https://github.com/JonCooperWorks/go-tdameritrade/tree/master/examples) directory.
 
-Looking up a stock quote using the API.
+#### Looking up a stock quote using the API.
 ```
 type TDHandlers struct {
 	authenticator *tdameritrade.Authenticator
