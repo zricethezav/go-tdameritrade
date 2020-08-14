@@ -77,8 +77,28 @@ type Client struct {
 
 More examples are in the [examples](https://github.com/JonCooperWorks/go-tdameritrade/tree/master/examples) directory.
 
+#### Configuring the Authenticator from an environment variable
 
-### Authenticating a user with OAuth2
+```
+clientID := os.Getenv("TDAMERITRADE_CLIENT_ID")
+if clientID == "" {
+	log.Fatal("Unauthorized: No client ID present")
+}
+
+authenticator := tdameritrade.NewAuthenticator(
+	&HTTPHeaderStore{},
+	oauth2.Config{
+		ClientID: clientID,
+		Endpoint: oauth2.Endpoint{
+			TokenURL: "https://api.tdameritrade.com/v1/oauth2/token",
+			AuthURL:  "https://auth.tdameritrade.com/auth",
+		},
+		RedirectURL: "https://localhost:8080/callback",
+	},
+)
+```
+
+#### Authenticating a user with OAuth2
 ```
 type TDHandlers struct {
 	authenticator *tdameritrade.Authenticator
