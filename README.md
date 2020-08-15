@@ -73,6 +73,9 @@ type Client struct {
 }
 ```
 
+You get a ```tdameritrade.Client``` from the ```FinishOAuth2``` or ```AuthenticatedClient``` method on the ```tdameritrade.Authenticator``` struct.
+
+
 ## Examples
 
 More examples are in the [examples](https://github.com/JonCooperWorks/go-tdameritrade/tree/master/examples) directory.
