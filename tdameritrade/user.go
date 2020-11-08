@@ -140,7 +140,7 @@ func (s *UserService) GetStreamerSubscriptionKeys(ctx context.Context, accountID
 // Valid values for `fields` are "streamerSubscriptionKeys", "streamerConnectionInfo", "preferences" and  "surrogateIds"
 // See https://developer.tdameritrade.com/user-principal/apis/get/userprincipals-0
 func (s *UserService) GetUserPrincipals(ctx context.Context, fields ...string) (*UserPrincipal, *Response, error) {
-	u := "userpricipals"
+	u := "userprincipals"
 	if len(fields) > 0 {
 		u = fmt.Sprintf("%s?fields=%s", u, strings.Join(fields, ","))
 	}
