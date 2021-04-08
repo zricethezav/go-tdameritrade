@@ -1,6 +1,6 @@
-module github.com/zricethezav/go-tdameritrade
+module github.com/joncooperworks/go-tdameritrade
 
-go 1.12
+go 1.14
 
 require (
 	github.com/google/go-querystring v1.0.0
