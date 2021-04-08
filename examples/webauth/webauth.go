@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/joncooperworks/go-tdameritrade"
+	"github.com/zricethezav/go-tdameritrade"
 	"golang.org/x/oauth2"
 )
 
