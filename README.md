@@ -1,5 +1,5 @@
 # go-tdameritrade
-go client for the tdameritrade api
+Go client for the tdameritrade api. Big thank you to [Jon Cooper](https://github.com/JonCooperWorks/go-tdameritrade) for creating a fork that made this project more complete. He also wrote the awesome documentation below.
 
 [![Documentation](https://godoc.org/github.com/zricethezav/go-tdameritrade?status.svg)](https://godoc.org/github.com/zricethezav/go-tdameritrade)
 
@@ -18,7 +18,7 @@ Authentication is handled by the ```Authenticator``` struct and its methods ```S
 You can get an authenticated ```tdameritrade.Client``` from an authenticated request with the ```AuthenticatedClient``` method, and use that to interact with the TD API.
 See [auth.go](https://github.com/zricethezav/go-tdameritrade/blob/master/auth.go).
 
-```
+```golang
 // Authenticator is a helper for TD Ameritrade's authentication.
 // It authenticates users and validates the state returned from TD Ameritrade to protect users from CSRF attacks.
 // It's recommended to use NewAuthenticator instead of creating this struct directly because TD Ameritrade requires Client IDs to be in the form clientid@AMER.OAUTHAP.
@@ -33,7 +33,7 @@ type Authenticator struct {
 The library handles state generation and the OAuth2 flow.
 Users simply implement the ```PersistentStore``` interface (see [auth.go](https://github.com/zricethezav/go-tdameritrade/blob/master/auth.go)) and tell it how to store and retrieve OAuth2 state and an ```oauth2.Token``` with the logged in user's credentials.
 
-```
+```golang
 // PersistentStore is meant to persist data from TD Ameritrade that is needed between requests.
 // Implementations must return the same value they set for a user in StoreState in GetState, or the login process will fail.
 // It is meant to allow credentials to be stored in cookies, JWTs and anything else you can think of.
@@ -50,7 +50,7 @@ The library is centered around the ```tdameritrade.Client```.
 It allows access to all services exposed by the TD Ameritrade REST API.
 More information about each service can be found on TD Ameritrade's [developer website](https://developer.tdameritrade.com/apis).
 
-```
+```golang
 // A Client manages communication with the TD-Ameritrade API.
 type Client struct {
 	client *http.Client // HTTP client used to communicate with the API.
@@ -82,7 +82,7 @@ More examples are in the [examples](https://github.com/zricethezav/go-tdameritra
 
 #### Configuring the Authenticator from an environment variable
 
-```
+```golang
 clientID := os.Getenv("TDAMERITRADE_CLIENT_ID")
 if clientID == "" {
 	log.Fatal("Unauthorized: No client ID present")
@@ -102,7 +102,7 @@ authenticator := tdameritrade.NewAuthenticator(
 ```
 
 #### Authenticating a user with OAuth2
-```
+```golang
 type TDHandlers struct {
 	authenticator *tdameritrade.Authenticator
 }
@@ -130,7 +130,7 @@ func (h *TDHandlers) Callback(w http.ResponseWriter, req *http.Request) {
 ```
 
 #### Looking up a stock quote using the API.
-```
+```golang
 type TDHandlers struct {
 	authenticator *tdameritrade.Authenticator
 }
