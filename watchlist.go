@@ -2,7 +2,9 @@ package tdameritrade
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 // NewWatchlist is a watchlist to be created by a user.
@@ -13,9 +15,9 @@ type NewWatchlist struct {
 
 // WatchlistItem is a security to be added to a NewWatchlist.
 type WatchlistItem struct {
-	Quantity      int                 `json:"quantity"`
-	AveragePrice  int                 `json:"averagePrice"`
-	Commission    int                 `json:"commission"`
+	Quantity      float64             `json:"quantity"`
+	AveragePrice  float64             `json:"averagePrice"`
+	Commission    float64             `json:"commission"`
 	PurchasedDate string              `json:"purchasedDate"`
 	Instrument    WatchlistInstrument `json:"instrument"`
 }
@@ -27,7 +29,7 @@ type WatchlistInstrument struct {
 }
 
 // StoredWatchlist is an existing watchlist in a user's account.
-type StoredWatchlist []struct {
+type StoredWatchlist struct {
 	Name           string                `json:"name"`
 	WatchlistID    string                `json:"watchlistId"`
 	AccountID      string                `json:"accountId"`
@@ -38,9 +40,9 @@ type StoredWatchlist []struct {
 // StoredWatchlistItem is an item in the user's existing watchlist.
 type StoredWatchlistItem struct {
 	SequenceID    int                       `json:"sequenceId"`
-	Quantity      int                       `json:"quantity"`
-	AveragePrice  int                       `json:"averagePrice"`
-	Commission    int                       `json:"commission"`
+	Quantity      float64                   `json:"quantity"`
+	AveragePrice  float64                   `json:"averagePrice"`
+	Commission    float64                   `json:"commission"`
 	PurchasedDate string                    `json:"purchasedDate"`
 	Instrument    StoredWatchlistInstrument `json:"instrument"`
 	Status        string                    `json:"status"`
@@ -126,8 +128,14 @@ func (s *WatchlistService) GetAllWatchlists(ctx context.Context) (*[]StoredWatch
 		return nil, nil, err
 	}
 
+	buf := new(strings.Builder)
+	resp, err := s.client.Do(ctx, req, buf)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	watchlists := new([]StoredWatchlist)
-	resp, err := s.client.Do(ctx, req, watchlists)
+	err = json.Unmarshal([]byte(buf.String()), watchlists)
 	return watchlists, resp, err
 }
 
