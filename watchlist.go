@@ -18,7 +18,7 @@ type WatchlistItem struct {
 	Quantity      float64             `json:"quantity"`
 	AveragePrice  float64             `json:"averagePrice"`
 	Commission    float64             `json:"commission"`
-	PurchasedDate string              `json:"purchasedDate"`
+	PurchasedDate string              `json:"purchasedDate,omitempty"`
 	Instrument    WatchlistInstrument `json:"instrument"`
 }
 
@@ -26,6 +26,30 @@ type WatchlistItem struct {
 type WatchlistInstrument struct {
 	Symbol    string `json:"symbol"`
 	AssetType string `json:"assetType"`
+}
+
+// ReplaceWatchlist is a watchlist used to replace an existing watchlist.
+type ReplaceWatchlist struct {
+	Name           string          `json:"name"`
+	WatchlistID    string          `json:"watchlistId"`
+	WatchlistItems []WatchlistItem `json:"watchlistItems"`
+}
+
+// UpdateWatchlist is a watchlist used to update an existing watchlist.
+type UpdateWatchlist struct {
+	Name           string                `json:"name"`
+	WatchlistID    string                `json:"watchlistId"`
+	WatchlistItems []UpdateWatchlistItem `json:"watchlistItems"`
+}
+
+// UpdateWatchlistItem is an item in the user's existing watchlist.
+type UpdateWatchlistItem struct {
+	SequenceID    int                 `json:"sequenceId"`
+	Quantity      float64             `json:"quantity"`
+	AveragePrice  float64             `json:"averagePrice"`
+	Commission    float64             `json:"commission"`
+	PurchasedDate string              `json:"purchasedDate,omitempty"`
+	Instrument    WatchlistInstrument `json:"instrument"`
 }
 
 // StoredWatchlist is an existing watchlist in a user's account.
@@ -160,17 +184,18 @@ func (s *WatchlistService) GetAllWatchlistsForAccount(ctx context.Context, accou
 // ReplaceWatchlist replaces a watchlist in an account with a new watchlist.
 // It does not verify that symbols are valid.
 // See https://developer.tdameritrade.com/watchlist/apis/put/accounts/%7BaccountId%7D/watchlists/%7BwatchlistId%7D-0
-func (s *WatchlistService) ReplaceWatchlist(ctx context.Context, accountID, watchlistID string, newWatchlist *NewWatchlist) (*Response, error) {
+func (s *WatchlistService) ReplaceWatchlist(ctx context.Context, accountID string, replaceWatchlist *ReplaceWatchlist) (*Response, error) {
 	if accountID == "" {
 		return nil, fmt.Errorf("accountID cannot be empty")
 	}
 
+	watchlistID := replaceWatchlist.WatchlistID
 	if watchlistID == "" {
 		return nil, fmt.Errorf("watchlistID cannot be empty")
 	}
 
 	u := fmt.Sprintf("accounts/%s/watchlists/%s", accountID, watchlistID)
-	req, err := s.client.NewRequest("PUT", u, newWatchlist)
+	req, err := s.client.NewRequest("PUT", u, replaceWatchlist)
 	if err != nil {
 		return nil, err
 	}
@@ -185,17 +210,18 @@ func (s *WatchlistService) ReplaceWatchlist(ctx context.Context, accountID, watc
 //  - update or delete items in a watchlist
 // This method does not verify that the symbol or asset type are valid.
 // See https://developer.tdameritrade.com/watchlist/apis/patch/accounts/%7BaccountId%7D/watchlists/%7BwatchlistId%7D-0
-func (s *WatchlistService) UpdateWatchlist(ctx context.Context, accountID, watchlistID string, newWatchlist *NewWatchlist) (*Response, error) {
+func (s *WatchlistService) UpdateWatchlist(ctx context.Context, accountID string, updateWatchlist *UpdateWatchlist) (*Response, error) {
 	if accountID == "" {
 		return nil, fmt.Errorf("accountID cannot be empty")
 	}
 
+	watchlistID := updateWatchlist.WatchlistID
 	if watchlistID == "" {
 		return nil, fmt.Errorf("watchlistID cannot be empty")
 	}
 
 	u := fmt.Sprintf("accounts/%s/watchlists/%s", accountID, watchlistID)
-	req, err := s.client.NewRequest("PATCH", u, newWatchlist)
+	req, err := s.client.NewRequest("PATCH", u, updateWatchlist)
 	if err != nil {
 		return nil, err
 	}
