@@ -170,7 +170,7 @@ type OrderLegCollection struct {
 	Instrument     Instrument `json:"instrument"`
 	Instruction    string     `json:"instruction"`
 	PositionEffect string     `json:"positionEffect,omitempty"`
-	Quantity       int        `json:"quantity"`
+	Quantity       float64    `json:"quantity"`
 	QuantityType   string     `json:"quantityType,omitempty"`
 }
 
@@ -178,6 +178,8 @@ type CancelTime struct {
 	Date        string `json:"date,omitempty"`
 	ShortFormat bool   `json:"shortFormat,omitempty"`
 }
+
+type Orders []Order
 
 type Order struct {
 	Session                  string                `json:"session"`
@@ -422,22 +424,38 @@ func (s *AccountsService) GetOrder(ctx context.Context, accountID, orderID strin
 	return s.client.Do(ctx, req, nil)
 }
 
-func (s *AccountsService) GetOrderByPath(ctx context.Context, accountID string, orderParams *OrderParams) (*Response, error) {
+func (s *AccountsService) GetOrderByPath(ctx context.Context, accountID string, orderParams *OrderParams) (*Orders, *Response, error) {
 	u := fmt.Sprintf("accounts/%s/orders", accountID)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return s.client.Do(ctx, req, nil)
+
+	orders := new(Orders)
+
+	resp, err := s.client.Do(ctx, req, orders)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return orders, resp, nil
 }
 
-func (s *AccountsService) GetOrderByQuery(ctx context.Context, accountID string, orderParams *OrderParams) (*Response, error) {
+func (s *AccountsService) GetOrderByQuery(ctx context.Context, accountID string, orderParams *OrderParams) (*Orders, *Response, error) {
 	u := fmt.Sprintf("accounts/%s/orders", accountID)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return s.client.Do(ctx, req, nil)
+
+	orders := new(Orders)
+
+	resp, err := s.client.Do(ctx, req, orders)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return orders, resp, nil
 }
 
 func (s *AccountsService) CreateSavedOrder(ctx context.Context, accountID string, order *Order) (*Response, error) {
