@@ -3,17 +3,18 @@ package tdameritrade
 import (
 	"context"
 	"fmt"
-	"github.com/google/go-querystring/query"
 	"time"
+
+	"github.com/google/go-querystring/query"
 )
 
 var (
-	validPeriodTypes = []string{"day", "month", "year", "ytd"}
+	validPeriodTypes    = []string{"day", "month", "year", "ytd"}
 	validFrequencyTypes = []string{"minute", "daily", "weekly", "monthly"}
 )
 
 const (
-	defaultPeriodType = "day"
+	defaultPeriodType    = "day"
 	defaultFrequencyType = "minute"
 )
 
@@ -31,15 +32,15 @@ type PriceHistoryOptions struct {
 	Period                int       `url:"period"`
 	FrequencyType         string    `url:"frequencyType"`
 	Frequency             int       `url:"frequency"`
-	EndDate               time.Time `url:"endDate"`
-	StartDate             time.Time `url:"startDate"`
-	NeedExtendedHoursData *bool      `url:"needExtendedHoursData"`
+	EndDate               time.Time `url:"endDate,omitempty"`
+	StartDate             time.Time `url:"startDate,omitempty"`
+	NeedExtendedHoursData *bool     `url:"needExtendedHoursData"`
 }
 
 type PriceHistory struct {
 	Candles []struct {
 		Close    float64 `json:"close"`
-		Datetime int `json:"datetime"`
+		Datetime int     `json:"datetime"`
 		High     float64 `json:"high"`
 		Low      float64 `json:"low"`
 		Open     float64 `json:"open"`
@@ -108,4 +109,3 @@ func contains(s string, lst []string) bool {
 	}
 	return false
 }
-
