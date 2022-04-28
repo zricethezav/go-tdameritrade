@@ -67,6 +67,15 @@ type FixedIncome struct {
 	Factor       float64 `json:"factor"`
 }
 
+type OrderActivity struct {
+	ActivityType           string          `json:"activityType"`
+	ActivityId             int64           `json:"activityId"`
+	ExecutionType          string          `json:"executionType"`
+	Quantity               float64         `json:"quantity"`
+	OrderRemainingQuantity float64         `json:"orderRemainingQuantity"`
+	ExecutionLegs          []*ExecutionLeg `json:"executionLegs"`
+}
+
 type SecuritiesAccount struct {
 	Type                    string  `json:"type"`
 	AccountID               string  `json:"accountId"`
@@ -93,43 +102,35 @@ type SecuritiesAccount struct {
 			Date        string `json:"date"`
 			ShortFormat bool   `json:"shortFormat"`
 		} `json:"cancelTime"`
-		ComplexOrderStrategyType string  `json:"complexOrderStrategyType"`
-		Quantity                 float64 `json:"quantity"`
-		FilledQuantity           float64 `json:"filledQuantity"`
-		RemainingQuantity        float64 `json:"remainingQuantity"`
-		RequestedDestination     string  `json:"requestedDestination"`
-		DestinationLinkName      string  `json:"destinationLinkName"`
-		ReleaseTime              string  `json:"releaseTime"`
-		StopPrice                float64 `json:"stopPrice"`
-		StopPriceLinkBasis       string  `json:"stopPriceLinkBasis"`
-		StopPriceLinkType        string  `json:"stopPriceLinkType"`
-		StopPriceOffset          float64 `json:"stopPriceOffset"`
-		StopType                 string  `json:"stopType"`
-		PriceLinkBasis           string  `json:"priceLinkBasis"`
-		PriceLinkType            string  `json:"priceLinkType"`
-		Price                    float64 `json:"price"`
-		TaxLotMethod             string  `json:"taxLotMethod"`
-		OrderLegCollection       []struct {
-			OrderLegType   string  `json:"orderLegType"`
-			LegID          int64   `json:"legId"`
-			Instrument     string  `json:"instrument"`
-			Instruction    string  `json:"instruction"`
-			PositionEffect string  `json:"positionEffect"`
-			Quantity       float64 `json:"quantity"`
-			QuantityType   string  `json:"quantityType"`
-		} `json:"orderLegCollection"`
-		ActivationPrice          float64  `json:"activationPrice"`
-		SpecialInstruction       string   `json:"specialInstruction"`
-		OrderStrategyType        string   `json:"orderStrategyType"`
-		OrderID                  int64    `json:"orderId"`
-		Cancelable               bool     `json:"cancelable"`
-		Editable                 bool     `json:"editable"`
-		Status                   string   `json:"status"`
-		EnteredTime              string   `json:"enteredTime"`
-		CloseTime                string   `json:"closeTime"`
-		Tag                      string   `json:"tag"`
-		AccountID                int64    `json:"accountId"`
-		OrderActivityCollection  []string `json:"orderActivityCollection"`
+		ComplexOrderStrategyType string               `json:"complexOrderStrategyType"`
+		Quantity                 float64              `json:"quantity"`
+		FilledQuantity           float64              `json:"filledQuantity"`
+		RemainingQuantity        float64              `json:"remainingQuantity"`
+		RequestedDestination     string               `json:"requestedDestination"`
+		DestinationLinkName      string               `json:"destinationLinkName"`
+		ReleaseTime              string               `json:"releaseTime"`
+		StopPrice                float64              `json:"stopPrice"`
+		StopPriceLinkBasis       string               `json:"stopPriceLinkBasis"`
+		StopPriceLinkType        string               `json:"stopPriceLinkType"`
+		StopPriceOffset          float64              `json:"stopPriceOffset"`
+		StopType                 string               `json:"stopType"`
+		PriceLinkBasis           string               `json:"priceLinkBasis"`
+		PriceLinkType            string               `json:"priceLinkType"`
+		Price                    float64              `json:"price"`
+		TaxLotMethod             string               `json:"taxLotMethod"`
+		OrderLegCollection       []OrderLegCollection `json:"orderLegCollection"`
+		ActivationPrice          float64              `json:"activationPrice"`
+		SpecialInstruction       string               `json:"specialInstruction"`
+		OrderStrategyType        string               `json:"orderStrategyType"`
+		OrderID                  int64                `json:"orderId"`
+		Cancelable               bool                 `json:"cancelable"`
+		Editable                 bool                 `json:"editable"`
+		Status                   string               `json:"status"`
+		EnteredTime              string               `json:"enteredTime"`
+		CloseTime                string               `json:"closeTime"`
+		Tag                      string               `json:"tag"`
+		AccountID                int64                `json:"accountId"`
+		OrderActivityCollection  []OrderActivity      `json:"orderActivityCollection"`
 		ReplacingOrderCollection []struct {
 		} `json:"replacingOrderCollection"`
 		ChildOrderStrategies []struct {
@@ -345,7 +346,6 @@ func (s *AccountsService) GetAccounts(ctx context.Context, opts *AccountOptions)
 
 	if err != nil {
 		return nil, nil, err
-
 	}
 	accounts := new(Accounts)
 	resp, err := s.client.Do(ctx, req, accounts)
