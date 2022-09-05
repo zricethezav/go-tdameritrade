@@ -38,16 +38,18 @@ type PriceHistoryOptions struct {
 }
 
 type PriceHistory struct {
-	Candles []struct {
-		Close    float64 `json:"close"`
-		Datetime int     `json:"datetime"`
-		High     float64 `json:"high"`
-		Low      float64 `json:"low"`
-		Open     float64 `json:"open"`
-		Volume   float64 `json:"volume"`
-	} `json:"candles"`
-	Empty  bool   `json:"empty"`
-	Symbol string `json:"symbol"`
+	Candles []Candle `json:"candles"`
+	Empty   bool     `json:"empty"`
+	Symbol  string   `json:"symbol"`
+}
+
+type Candle struct {
+	Close    float64 `json:"close"`
+	Datetime int     `json:"datetime"`
+	High     float64 `json:"high"`
+	Low      float64 `json:"low"`
+	Open     float64 `json:"open"`
+	Volume   float64 `json:"volume"`
 }
 
 // PriceHistory get the price history for a symbol
