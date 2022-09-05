@@ -66,9 +66,8 @@ type Quote struct {
 	Delayed                            bool    `json:"delayed"`
 }
 
-
 func (s *QuotesService) GetQuotes(ctx context.Context, symbols string) (*Quotes, *Response, error) {
-	u := fmt.Sprintf("marketdata/quotes")
+	u := "marketdata/quotes"
 	if symbols == "" {
 		return nil, nil, fmt.Errorf("no symbols present")
 	}
@@ -89,4 +88,3 @@ func (s *QuotesService) GetQuotes(ctx context.Context, symbols string) (*Quotes,
 
 	return quotes, resp, nil
 }
-

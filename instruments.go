@@ -44,7 +44,7 @@ func (s *InstrumentService) GetInstrument(ctx context.Context, cusip string) (*I
 }
 
 func (s *InstrumentService) SearchInstruments(ctx context.Context, symbol, projection string) (*Instruments, *Response, error) {
-	u := fmt.Sprintf("instruments")
+	u := "instruments"
 	if symbol == "" {
 		return nil, nil, fmt.Errorf("no symbol present")
 	}
