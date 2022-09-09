@@ -39,7 +39,7 @@ type Hours struct {
 }
 
 func (s *MarketHoursService) GetMarketHoursMulti(ctx context.Context, markets string, date time.Time) (*MarketHours, *Response, error) {
-	u := fmt.Sprintf("marketdata/hours")
+	u := "marketdata/hours"
 	if markets == "" {
 		return nil, nil, fmt.Errorf("no markets present")
 	}

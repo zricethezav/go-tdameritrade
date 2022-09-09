@@ -77,69 +77,70 @@ type OrderActivity struct {
 }
 
 type SecuritiesAccount struct {
-	Type                    string  `json:"type"`
-	AccountID               string  `json:"accountId"`
-	RoundTrips              float64 `json:"roundTrips"`
-	IsDayTrader             bool    `json:"isDayTrader"`
-	IsClosingOnlyRestricted bool    `json:"isClosingOnlyRestricted"`
-	Positions               []struct {
-		ShortQuantity                  float64    `json:"shortQuantity"`
-		AveragePrice                   float64    `json:"averagePrice"`
-		CurrentDayProfitLoss           float64    `json:"currentDayProfitLoss"`
-		CurrentDayProfitLossPercentage float64    `json:"currentDayProfitLossPercentage"`
-		LongQuantity                   float64    `json:"longQuantity"`
-		SettledLongQuantity            float64    `json:"settledLongQuantity"`
-		SettledShortQuantity           float64    `json:"settledShortQuantity"`
-		AgedQuantity                   float64    `json:"agedQuantity"`
-		Instrument                     Instrument `json:"instrument"`
-		MarketValue                    float64    `json:"marketValue"`
-	} `json:"positions"`
-	OrderStrategies []struct {
-		Session    string `json:"session"`
-		Duration   string `json:"duration"`
-		OrderType  string `json:"orderType"`
-		CancelTime struct {
-			Date        string `json:"date"`
-			ShortFormat bool   `json:"shortFormat"`
-		} `json:"cancelTime"`
-		ComplexOrderStrategyType string               `json:"complexOrderStrategyType"`
-		Quantity                 float64              `json:"quantity"`
-		FilledQuantity           float64              `json:"filledQuantity"`
-		RemainingQuantity        float64              `json:"remainingQuantity"`
-		RequestedDestination     string               `json:"requestedDestination"`
-		DestinationLinkName      string               `json:"destinationLinkName"`
-		ReleaseTime              string               `json:"releaseTime"`
-		StopPrice                float64              `json:"stopPrice"`
-		StopPriceLinkBasis       string               `json:"stopPriceLinkBasis"`
-		StopPriceLinkType        string               `json:"stopPriceLinkType"`
-		StopPriceOffset          float64              `json:"stopPriceOffset"`
-		StopType                 string               `json:"stopType"`
-		PriceLinkBasis           string               `json:"priceLinkBasis"`
-		PriceLinkType            string               `json:"priceLinkType"`
-		Price                    float64              `json:"price"`
-		TaxLotMethod             string               `json:"taxLotMethod"`
-		OrderLegCollection       []OrderLegCollection `json:"orderLegCollection"`
-		ActivationPrice          float64              `json:"activationPrice"`
-		SpecialInstruction       string               `json:"specialInstruction"`
-		OrderStrategyType        string               `json:"orderStrategyType"`
-		OrderID                  int64                `json:"orderId"`
-		Cancelable               bool                 `json:"cancelable"`
-		Editable                 bool                 `json:"editable"`
-		Status                   string               `json:"status"`
-		EnteredTime              string               `json:"enteredTime"`
-		CloseTime                string               `json:"closeTime"`
-		Tag                      string               `json:"tag"`
-		AccountID                int64                `json:"accountId"`
-		OrderActivityCollection  []OrderActivity      `json:"orderActivityCollection"`
-		ReplacingOrderCollection []struct {
-		} `json:"replacingOrderCollection"`
-		ChildOrderStrategies []struct {
-		} `json:"childOrderStrategies"`
-		StatusDescription string `json:"statusDescription"`
-	} `json:"orderStrategies"`
-	InitialBalances   Balance `json:"initialBalances"`
-	CurrentBalances   Balance `json:"currentBalances"`
-	ProjectedBalances Balance `json:"projectedBalances"`
+	Type                    string          `json:"type"`
+	AccountID               string          `json:"accountId"`
+	RoundTrips              float64         `json:"roundTrips"`
+	IsDayTrader             bool            `json:"isDayTrader"`
+	IsClosingOnlyRestricted bool            `json:"isClosingOnlyRestricted"`
+	Positions               []Position      `json:"positions"`
+	OrderStrategies         []OrderStrategy `json:"orderStrategies"`
+	InitialBalances         Balance         `json:"initialBalances"`
+	CurrentBalances         Balance         `json:"currentBalances"`
+	ProjectedBalances       Balance         `json:"projectedBalances"`
+}
+
+type Position struct {
+	ShortQuantity                  float64    `json:"shortQuantity"`
+	AveragePrice                   float64    `json:"averagePrice"`
+	CurrentDayProfitLoss           float64    `json:"currentDayProfitLoss"`
+	CurrentDayProfitLossPercentage float64    `json:"currentDayProfitLossPercentage"`
+	LongQuantity                   float64    `json:"longQuantity"`
+	SettledLongQuantity            float64    `json:"settledLongQuantity"`
+	SettledShortQuantity           float64    `json:"settledShortQuantity"`
+	AgedQuantity                   float64    `json:"agedQuantity"`
+	Instrument                     Instrument `json:"instrument"`
+	MarketValue                    float64    `json:"marketValue"`
+}
+
+type OrderStrategy struct {
+	Session                  string               `json:"session"`
+	Duration                 string               `json:"duration"`
+	OrderType                string               `json:"orderType"`
+	CancelTime               CancelTime           `json:"cancelTime"`
+	ComplexOrderStrategyType string               `json:"complexOrderStrategyType"`
+	Quantity                 float64              `json:"quantity"`
+	FilledQuantity           float64              `json:"filledQuantity"`
+	RemainingQuantity        float64              `json:"remainingQuantity"`
+	RequestedDestination     string               `json:"requestedDestination"`
+	DestinationLinkName      string               `json:"destinationLinkName"`
+	ReleaseTime              string               `json:"releaseTime"`
+	StopPrice                float64              `json:"stopPrice"`
+	StopPriceLinkBasis       string               `json:"stopPriceLinkBasis"`
+	StopPriceLinkType        string               `json:"stopPriceLinkType"`
+	StopPriceOffset          float64              `json:"stopPriceOffset"`
+	StopType                 string               `json:"stopType"`
+	PriceLinkBasis           string               `json:"priceLinkBasis"`
+	PriceLinkType            string               `json:"priceLinkType"`
+	Price                    float64              `json:"price"`
+	TaxLotMethod             string               `json:"taxLotMethod"`
+	OrderLegCollection       []OrderLegCollection `json:"orderLegCollection"`
+	ActivationPrice          float64              `json:"activationPrice"`
+	SpecialInstruction       string               `json:"specialInstruction"`
+	OrderStrategyType        string               `json:"orderStrategyType"`
+	OrderID                  int64                `json:"orderId"`
+	Cancelable               bool                 `json:"cancelable"`
+	Editable                 bool                 `json:"editable"`
+	Status                   string               `json:"status"`
+	EnteredTime              string               `json:"enteredTime"`
+	CloseTime                string               `json:"closeTime"`
+	Tag                      string               `json:"tag"`
+	AccountID                int64                `json:"accountId"`
+	OrderActivityCollection  []OrderActivity      `json:"orderActivityCollection"`
+	ReplacingOrderCollection []struct {
+	} `json:"replacingOrderCollection"`
+	ChildOrderStrategies []struct {
+	} `json:"childOrderStrategies"`
+	StatusDescription string `json:"statusDescription"`
 }
 
 type Balance struct {
