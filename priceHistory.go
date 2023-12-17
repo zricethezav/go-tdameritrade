@@ -67,6 +67,7 @@ func (s *PriceHistoryService) PriceHistory(ctx context.Context, symbol string, o
 		u = fmt.Sprintf("%s?%s", u, q.Encode())
 	}
 
+	fmt.Println("URL=", u)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, nil, err
@@ -97,7 +98,7 @@ func (opts *PriceHistoryOptions) validate() error {
 			return fmt.Errorf("invalid frequencyType, must have the value of one of the following %v", validFrequencyTypes)
 		}
 	} else {
-		opts.PeriodType = defaultFrequencyType
+		opts.FrequencyType = defaultFrequencyType
 	}
 
 	return nil
